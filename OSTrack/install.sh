@@ -1,5 +1,6 @@
 echo "****************** Installing pytorch ******************"
-conda install pytorch==1.9.0 torchvision==0.10.0 torchaudio==0.9.0 cudatoolkit=10.2 -c pytorch
+#conda install pytorch==1.9.0 torchvision==0.10.0 torchaudio==0.9.0 cudatoolkit=10.2 -c pytorch
+pip3 install torch torchvision torchaudio
 
 echo ""
 echo ""

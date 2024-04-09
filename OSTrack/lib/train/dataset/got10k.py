@@ -64,10 +64,10 @@ class Got10k(BaseVideoDataset):
         elif seq_ids is None:
             seq_ids = list(range(0, len(self.sequence_list)))
 
-        self.sequence_list = [self.sequence_list[i] for i in seq_ids]
+        self.sequence_list = [self.sequence_list[i] for i in seq_ids if i < 500]
 
         if data_fraction is not None:
-            self.sequence_list = random.sample(self.sequence_list, int(len(self.sequence_list)*data_fraction))
+            self.sequence_list = random.sample(self.sequence_list, int(len(self.sequence_list) * data_fraction))
 
         self.sequence_meta_info = self._load_meta_info()
         self.seq_per_class = self._build_seq_per_class()
@@ -128,7 +128,8 @@ class Got10k(BaseVideoDataset):
 
     def _read_bb_anno(self, seq_path):
         bb_anno_file = os.path.join(seq_path, "groundtruth.txt")
-        gt = pandas.read_csv(bb_anno_file, delimiter=',', header=None, dtype=np.float32, na_filter=False, low_memory=False).values
+        gt = pandas.read_csv(bb_anno_file, delimiter=',', header=None, dtype=np.float32, na_filter=False,
+                             low_memory=False).values
         return torch.tensor(gt)
 
     def _read_target_visible(self, seq_path):
@@ -141,7 +142,7 @@ class Got10k(BaseVideoDataset):
         with open(cover_file, 'r', newline='') as f:
             cover = torch.ByteTensor([int(v[0]) for v in csv.reader(f)])
 
-        target_visible = ~occlusion & (cover>0).byte()
+        target_visible = ~occlusion & (cover > 0).byte()
 
         visible_ratio = cover.float() / 8
         return target_visible, visible_ratio
@@ -160,7 +161,7 @@ class Got10k(BaseVideoDataset):
         return {'bbox': bbox, 'valid': valid, 'visible': visible, 'visible_ratio': visible_ratio}
 
     def _get_frame_path(self, seq_path, frame_id):
-        return os.path.join(seq_path, '{:08}.jpg'.format(frame_id+1))    # frames start from 1
+        return os.path.join(seq_path, '{:08}.jpg'.format(frame_id + 1))  # frames start from 1
 
     def _get_frame(self, seq_path, frame_id):
         return self.image_loader(self._get_frame_path(seq_path, frame_id))
